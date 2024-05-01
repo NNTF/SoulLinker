@@ -35,4 +35,7 @@ public class SoulLinkerSettings : ISettings
     
     [Menu("Debug", "Print debug messages?", 7)]
     public ToggleNode Debug { get; set; } = new ToggleNode(false);
+
+    [Menu("Recast time", "Time of the recast before the buff end", 6)]
+    public RangeNode<int> RecastTime { get; set; } = new RangeNode<int>(0, 0, 10);
 }

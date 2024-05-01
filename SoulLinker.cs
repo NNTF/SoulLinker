@@ -186,9 +186,16 @@ public class SoulLinker : BaseSettingsPlugin<SoulLinkerSettings>
         {
             LogError("Requested buff check, but buff list is empty.");
             return null;
+        
         }
 
-        return buffs.Any(b => string.Compare(b.Name, buffName, StringComparison.OrdinalIgnoreCase) == 0);
+        var bufftimer = buffs.Any(b => string.Compare(b.Name, buffName, StringComparison.OrdinalIgnoreCase) == 0);
+
+        if(Settings.RecastTime.Value > 0 && buffName != "grace_period")
+        {
+             bufftimer = buffs.Any(b => string.Compare(b.Name, buffName, StringComparison.OrdinalIgnoreCase) == 0 && b.Timer > Settings.RecastTime.Value);
+        }
+        return bufftimer;
     }
 
     private ActorSkill GetUsableSkill(string skillName)
