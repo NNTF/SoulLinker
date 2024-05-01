@@ -65,6 +65,8 @@ public class SoulLinker : BaseSettingsPlugin<SoulLinkerSettings>
             if (GameController.IsLoading || !GameController.InGame || MenuWindow.IsOpened ||
                 !GameController.IsForeGroundCache)
                 return;
+            if (Settings.InHideout && GameController.Area.CurrentArea.IsHideout)
+                return;
             var player = GameController.Game.IngameState.Data.LocalPlayer;
             if (player == null)
             {

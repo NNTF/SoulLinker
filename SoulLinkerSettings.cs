@@ -38,4 +38,7 @@ public class SoulLinkerSettings : ISettings
 
     [Menu("Recast time", "Time of the recast before the buff end", 6)]
     public RangeNode<int> RecastTime { get; set; } = new RangeNode<int>(0, 0, 10);
+
+    [Menu("Disable in hideout", "Disable casting in hideout", 7)]
+    public ToggleNode InHideout { get; set; } = new ToggleNode(false);
 }
