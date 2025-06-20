@@ -132,19 +132,18 @@ public class SoulLinker : BaseSettingsPlugin<SoulLinkerSettings>
                 return;
             }
 
-            //var sourceBuff = HasBuff(buffs, Settings.linkerBuffName.Value); 
-            //if (!sourceBuff.HasValue || sourceBuff.Value)
-            //{
-            //    DebugLogMessage($"Player already has {Settings.linkerBuffName.Value} buff.");
-            //    return;
-            //}
+            
 
             var targetBuffs = linkTarget.GetComponent<Buffs>()?.BuffsList;
-            var targetBuff = HasBuff(targetBuffs, Settings.linkerBuffName.Value);
+            var targetBuff = HasBuff(targetBuffs, Settings.linkerBuffName.Value + "_target");
             if (!targetBuff.HasValue || targetBuff.Value)
             {
-                DebugLogMessage($"Player already has {Settings.linkerBuffName.Value} buff.");
-                return;
+                var sourceBuff = HasBuff(buffs, Settings.linkerBuffName.Value + "_source");
+                if (!sourceBuff.HasValue || sourceBuff.Value)
+                {
+                    DebugLogMessage($"Player already has {Settings.linkerBuffName.Value} buff.");
+                    return;
+                }
             }
 
             var playerPosition = player.Pos;
