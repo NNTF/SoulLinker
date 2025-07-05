@@ -94,17 +94,10 @@ public class SoulLinker : BaseSettingsPlugin<SoulLinkerSettings>
                 return;
             }
 
-            var gracePeriod = HasBuff("grace_period");
+            var gracePeriod = HasBuff(buffs, "grace_period");
             if (!gracePeriod.HasValue || gracePeriod.Value)
             {
                 DebugLogMessage("Player has grace period.");
-                return;
-            }
-
-            var linkBuff = HasBuff(Settings.linkerBuffName.Value);
-            if (!linkBuff.HasValue || linkBuff.Value)
-            {
-                DebugLogMessage($"Player already has {Settings.linkerBuffName.Value} buff.");
                 return;
             }
 
@@ -137,6 +130,20 @@ public class SoulLinker : BaseSettingsPlugin<SoulLinkerSettings>
             {
                 DebugLogMessage($"Link target with name {linkTargetName} not found.");
                 return;
+            }
+
+            
+
+            var targetBuffs = linkTarget.GetComponent<Buffs>()?.BuffsList;
+            var targetBuff = HasBuff(targetBuffs, Settings.linkerBuffName.Value + "_target");
+            if (!targetBuff.HasValue || targetBuff.Value)
+            {
+                var sourceBuff = HasBuff(buffs, Settings.linkerBuffName.Value + "_source");
+                if (!sourceBuff.HasValue || sourceBuff.Value)
+                {
+                    DebugLogMessage($"Player already has {Settings.linkerBuffName.Value} buff.");
+                    return;
+                }
             }
 
             var playerPosition = player.Pos;
@@ -182,20 +189,20 @@ public class SoulLinker : BaseSettingsPlugin<SoulLinkerSettings>
         });
     }
 
-    private bool? HasBuff(string buffName)
+    private bool? HasBuff(List<Buff> buffList, string buffName)
     {
-        if (buffs == null)
+        if (buffList == null)
         {
             LogError("Requested buff check, but buff list is empty.");
             return null;
         
         }
 
-        var bufftimer = buffs.Any(b => string.Compare(b.Name, buffName, StringComparison.OrdinalIgnoreCase) == 0);
+        var bufftimer = buffList.Any(b => string.Compare(b.Name, buffName, StringComparison.OrdinalIgnoreCase) == 0);
 
         if(Settings.RecastTime.Value > 0 && buffName != "grace_period")
         {
-             bufftimer = buffs.Any(b => string.Compare(b.Name, buffName, StringComparison.OrdinalIgnoreCase) == 0 && b.Timer > Settings.RecastTime.Value);
+             bufftimer = buffList.Any(b => string.Compare(b.Name, buffName, StringComparison.OrdinalIgnoreCase) == 0 && b.Timer > Settings.RecastTime.Value);
         }
         return bufftimer;
     }
