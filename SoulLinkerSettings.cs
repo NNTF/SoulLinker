@@ -21,6 +21,9 @@ public class SoulLinkerSettings : ISettings
     [Menu("Is Mercenary", "Is the target a mercenary?", 7)]
     public ToggleNode IsMercenary { get; set; } = new ToggleNode(false);
 
+    [Menu("Return Mouse", "Return mouse to previous position before link?", 7)]
+    public ToggleNode ReturnMousePosition { get; set; } = new ToggleNode(false);
+
     [Menu("Max Distance", "Max distance to target to use Link skill.", 2)]
     public RangeNode<int> linkerMaxDistance { get; set; } = new RangeNode<int>(800, 50, 1500);
     

@@ -1,13 +1,12 @@
  using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using ExileCore;
 using ExileCore.PoEMemory.Components;
 using ExileCore.PoEMemory.MemoryObjects;
 using ExileCore.Shared.Enums;
 using SharpDX;
-using Vector2 = System.Numerics.Vector2;
 
 namespace SoulLinker;
 
@@ -18,6 +17,7 @@ public class SoulLinker : BaseSettingsPlugin<SoulLinkerSettings>
     private List<ActorSkill> skills;
     private DateTime nextTickTime;
     private Entity linkTarget;
+    private bool isCasting = false;
 
     public override bool Initialise()
     {
@@ -44,6 +44,7 @@ public class SoulLinker : BaseSettingsPlugin<SoulLinkerSettings>
 
     public override Job Tick()
     {
+
         //Perform non-render-related work here, e.g. position calculation.
         //This method is still called on every frame, so to really gain
         //an advantage over just throwing everything in the Render method
@@ -57,14 +58,14 @@ public class SoulLinker : BaseSettingsPlugin<SoulLinkerSettings>
         //otherwise, just run your code here
         //var a = Math.Sqrt(7);
 
-        return new Job($"{nameof(SoulLinker)}MainJob", () =>
+        return new Job($"{nameof(SoulLinker)}MainJob", async () =>
         {
             if (!Settings.Enable)
                 return;
             if (this.nextTickTime > DateTime.Now)
                 return;
             if (GameController.IsLoading || !GameController.InGame || MenuWindow.IsOpened ||
-                !GameController.IsForeGroundCache)
+                !GameController.IsForeGroundCache || GameController.IngameState.IngameUi.ChatPanel.ChatTitlePanel.IsVisible)
                 return;
             if (Settings.InHideout && GameController.Area.CurrentArea.IsHideout)
                 return;
@@ -142,7 +143,7 @@ public class SoulLinker : BaseSettingsPlugin<SoulLinkerSettings>
                 return;
             }
 
-            
+
 
             var targetBuffs = linkTarget.GetComponent<Buffs>()?.BuffsList;
             var targetBuff = HasBuff(targetBuffs, Settings.linkerBuffName.Value + "_target");
@@ -189,8 +190,20 @@ public class SoulLinker : BaseSettingsPlugin<SoulLinkerSettings>
             }
 
             var windowOffset = GameController.Window.GetWindowRectangle().TopLeft;
-            Input.SetCursorPos(targetPosToScreen + windowOffset);
-            Input.KeyPress(Settings.linkerSkillKey.Value);
+            var currentMousePos = ExileCore.Input.MousePosition;
+            if (!isCasting)
+            {
+                isCasting = true;
+                Input.SetCursorPos(targetPosToScreen + windowOffset);
+                await Task.Delay(70);
+                Input.KeyPress(Settings.linkerSkillKey.Value);
+                if (Settings.ReturnMousePosition.Value)
+                {
+                    await Task.Delay(70);
+                    Input.SetCursorPos(currentMousePos + windowOffset);
+                }
+                isCasting = false;
+            }
 
             DebugLogMessage($"Casting skill {Settings.linkerSkillName.Value} on target {linkTargetName}.");
 
