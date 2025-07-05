@@ -1,4 +1,4 @@
-﻿using System.Windows.Forms;
+using System.Windows.Forms;
 using ExileCore.Shared.Attributes;
 using ExileCore.Shared.Interfaces;
 using ExileCore.Shared.Nodes;
@@ -17,7 +17,10 @@ public class SoulLinkerSettings : ISettings
 
     [Menu("Target name", "Name of the  Link target", 1)]
     public TextNode linkerLeaderName { get; set; } = new TextNode("");
-    
+
+    [Menu("Is Mercenary", "Is the target a mercenary?", 7)]
+    public ToggleNode IsMercenary { get; set; } = new ToggleNode(false);
+
     [Menu("Max Distance", "Max distance to target to use Link skill.", 2)]
     public RangeNode<int> linkerMaxDistance { get; set; } = new RangeNode<int>(800, 50, 1500);
     
