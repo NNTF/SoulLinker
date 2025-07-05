@@ -1,4 +1,4 @@
-﻿using System;
+ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -17,6 +17,7 @@ public class SoulLinker : BaseSettingsPlugin<SoulLinkerSettings>
     private List<Buff> buffs;
     private List<ActorSkill> skills;
     private DateTime nextTickTime;
+    private Entity linkTarget;
 
     public override bool Initialise()
     {
@@ -122,9 +123,18 @@ public class SoulLinker : BaseSettingsPlugin<SoulLinkerSettings>
                 return;
             }
 
-            var linkTarget = GameController.EntityListWrapper.ValidEntitiesByType[EntityType.Player]
+            if (Settings.IsMercenary.Value)
+            {
+                linkTarget = GameController.EntityListWrapper.ValidEntitiesByType[EntityType.Monster]
+                .FirstOrDefault(p => string.Compare(p.RenderName, linkTargetName,
+                    StringComparison.OrdinalIgnoreCase) == 0 && p.IsAlive && p.IsTargetable && p.IsHostile == false);
+            }
+            else
+            {
+                linkTarget = GameController.EntityListWrapper.ValidEntitiesByType[EntityType.Player]
                 .FirstOrDefault(p => string.Compare(p.GetComponent<Player>()?.PlayerName, linkTargetName,
                     StringComparison.OrdinalIgnoreCase) == 0);
+            }
 
             if (linkTarget == null)
             {
