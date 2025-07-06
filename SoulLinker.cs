@@ -65,7 +65,12 @@ public class SoulLinker : BaseSettingsPlugin<SoulLinkerSettings>
             if (this.nextTickTime > DateTime.Now)
                 return;
             if (GameController.IsLoading || !GameController.InGame || MenuWindow.IsOpened ||
-                !GameController.IsForeGroundCache || GameController.IngameState.IngameUi.ChatPanel.ChatTitlePanel.IsVisible)
+                !GameController.IsForeGroundCache || GameController.IngameState.IngameUi.ChatPanel.ChatTitlePanel.IsVisible||
+                 GameController.IngameState.IngameUi.MercenaryEncounterWindow.IsVisible ||
+                 GameController.IngameState.IngameUi.InventoryPanel.IsVisible ||
+                 GameController.IngameState.IngameUi.OpenLeftPanel.IsVisible ||
+                 GameController.IngameState.IngameUi.OpenRightPanel.IsVisible ||
+                 GameController.IngameState.IngameUi.FullscreenPanels.Any(p => p.IsVisible))
                 return;
             if (Settings.InHideout && GameController.Area.CurrentArea.IsHideout)
                 return;
